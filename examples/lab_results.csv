@@ -1,0 +1,5 @@
+sample_id,analyte,result,unit,analyzed_at
+A-01-2026Q2,T-N,0.31,mg/L,2026-06-18
+A-01-2026Q2,T-P,0.018,mg/L,2026-06-18
+A-03-2026Q2,T-P,0.021,mg/L,2026-06-18
+UNKNOWN-2026Q2,T-N,0.28,mg/L,2026-06-18
