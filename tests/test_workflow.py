@@ -42,3 +42,17 @@ def test_missing_handoff(tmp_path):
     initialize(db)
     register_sample("S2","P","B-01","2026-06-10","해수",["T-N"],db=db)
     assert any("인수인계" in row["issue"] for row in validate(db))
+
+def test_unrequested_analyte_is_not_reported_as_verified(tmp_path):
+    db=tmp_path/"extra.db"
+    initialize(db)
+    register_sample("S3","P","C-01","2026-06-10","해수",["T-N"],db=db)
+    record_handoff("S3","a","b","2026-06-10",db=db)
+    csv="sample_id,analyte,result,unit,analyzed_at\nS3,T-N,0.3,mg/L,2026-06-11\nS3,T-P,0.02,mg/L,2026-06-11\n"
+    assert import_lab_csv(csv,"extra.csv",db)["imported"]==2
+    assert any("등록되지 않은 분석 항목: T-P" in row["issue"] for row in validate(db))
+    assert [row["analyte"] for row in verified_results(db)]==["T-N"]
+    report=draft_report(db)
+    assert "| S3 | T-N |" in report
+    assert "| S3 | T-P |" not in report
+    assert "등록되지 않은 분석 항목: T-P" in report
