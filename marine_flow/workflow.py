@@ -95,4 +95,7 @@ def validate(db=None):
 
 def verified_results(db=None):
     invalid={v["sample_id"] for v in validate(db) if v["level"]=="확인 필요"}
-    return [v for v in result_rows(db) if v["sample_id"] not in invalid]
+    expected={s["sample_id"]:set(s["expected_analytes"].split(",")) for s in sample_rows(db)}
+    return [v for v in result_rows(db)
+            if v["sample_id"] not in invalid
+            and v["analyte"] in expected.get(v["sample_id"], set())]
